@@ -1,0 +1,185 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Template: Project Titlepage Modified (v 0.1) by rcx
+%
+% Original Source: http://www.howtotex.com
+% Date: February 2014
+% 
+% This is a title page template which be used for articles & reports.
+% 
+% This is the modified version of the original Latex template from
+% aforementioned website.
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{report}
+\usepackage[a4paper]{geometry}
+\usepackage[myheadings]{fullpage}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx, wrapfig, subcaption, setspace, booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[font=small, labelfont=bf]{caption}
+\usepackage{fourier}
+\usepackage[protrusion=true, expansion=true]{microtype}
+\usepackage[english]{babel}
+\usepackage{sectsty}
+\usepackage{url, lipsum}
+
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+\onehalfspacing
+
+
+%-------------------------------------------------------------------------------
+% HEADER & FOOTER
+%-------------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\setlength\headheight{15pt}
+\renewcommand{\thesection}{\arabic{section}}
+\fancyhead[L]{Fabio Di Francesco}
+\fancyhead[R]{David Sarda}
+\fancyfoot[R]{Page \thepage\ of \pageref{LastPage}}
+%-------------------------------------------------------------------------------
+% TITLE PAGE
+%-------------------------------------------------------------------------------
+
+\begin{document}
+
+\title{ \normalsize \textsc{Algorithmics for Data Mining}
+		\\ [2.0cm]
+		\HRule{0.5pt} \\
+		\LARGE \textbf{\uppercase{ADM - Assignment 2}}
+		\HRule{2pt} \\ [0.5cm]
+		\normalsize \today \vspace*{5\baselineskip}}
+
+\date{}
+
+\author{
+		Fabio Di Francesco \\ 
+		David Sarda }
+
+\maketitle
+\tableofcontents
+\newpage
+
+%-------------------------------------------------------------------------------
+% Section title formatting
+\sectionfont{\scshape}
+%-------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
+% BODY
+%-------------------------------------------------------------------------------
+
+\section{Introduction}
+
+We are big python fans so we decided to try one of the libraries for machine learning that are available, \textit{sklearn}. To do so we chose a dataset that looked interesting, it's about homicide reports on the United States between 1980 and 2014. The main columns are as follows:
+\\\\
+\emph{City/State/Year/Month:} Time and place of the incident.\\
+\emph{CrimeType:} The type of crime commited, in this database it can be either a murder, or a manslaughter by negligence.\\
+\emph{Crime solved:} It states whether the crime was solved or not (by 2016).\\
+\emph{Victim\textunderscore sex/Victim\textunderscore age/Victim\textunderscore race:} Characteristics of the victim.\\
+\emph{Perpetrator\textunderscore sex/Perpetrator\textunderscore age/Perpetrator\textunderscore race:} Characteristics of the main perpetrator.\\
+\emph{Relationship:} The relationship between the victim and the perpretator.\\
+\emph{Weapon:} The weapon used for the crime.\\
+\emph{Additional\textunderscore Victim\textunderscore Count:} The number of victims killed by the perpetrator in addition to this one.\\
+\emph{Additional\textunderscore Perpetrator\textunderscore Count:} The number of perpetrators that collaborated with the main perpetrators to execute the crime.\\
+\emph{Record\textunderscore Agency:} The agency that was responsible for investigating the case.
+
+%\section{Database preprocessing}
+%
+%The data cleaning we performed was actually quite simple because the dataset we used was already in fairly good condition. First, we went through each variable and removed the ones that we would not be able to used during the data mining step. This included variables that were duplicates, had the same value for all observations, or were simply names or ids. Following this, we interpolated all missing values using average interpolation, the average of the following and previous non-missing values in the observations. 
+
+\section{Data Mining Algorithms}
+
+\paragraph{Naive Bayes} 
+
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[width=.5\linewidth]{NB}
+%  \caption{Naive Bayes Results}
+%  \label{fig:NB}
+%\end{figure}
+
+\paragraph{Decision Tree}
+
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[scale=0.5]{decision_tree_partition_confusion_matrix}
+%  \caption{Confusion matrix of the decision tree using partition(70\% training, 30\% test)}
+%  \label{fig:CMPDT}
+%\end{figure}
+
+
+\paragraph{K-Nearest Neighbors (KNN)}
+
+
+\paragraph{K-Nearest Neighbors (KNN) with PCA} Finally, we decided to run a PCA on our 
+
+\section{Final Thoughts} 
+
+\end{document}
+
+%-------------------------------------------------------------------------------
+% SNIPPETS
+%-------------------------------------------------------------------------------
+
+%\begin{figure}[!ht]
+%	\centering
+%	\includegraphics[width=0.8\textwidth]{file_name}
+%	\caption{}
+%	\centering
+%	\label{label:file_name}
+%\end{figure}
+
+%\begin{figure}[!ht]
+%	\centering
+%	\includegraphics[width=0.8\textwidth]{graph}
+%	\caption{Blood pressure ranges and associated level of hypertension (American Heart Association, 2013).}
+%	\centering
+%	\label{label:graph}
+%\end{figure}
+
+%\begin{wrapfigure}{r}{0.30\textwidth}
+%	\vspace{-40pt}
+%	\begin{center}
+%		\includegraphics[width=0.29\textwidth]{file_name}
+%	\end{center}
+%	\vspace{-20pt}
+%	\caption{}
+%	\label{label:file_name}
+%\end{wrapfigure}
+
+%\begin{wrapfigure}{r}{0.45\textwidth}
+%	\begin{center}
+%		\includegraphics[width=0.29\textwidth]{manometer}
+%	\end{center}
+%	\caption{Aneroid sphygmomanometer with stethoscope (Medicalexpo, 2012).}
+%	\label{label:manometer}
+%\end{wrapfigure}
+
+%\begin{table}[!ht]\footnotesize
+%	\centering
+%	\begin{tabular}{cccccc}
+%	\toprule
+%	\multicolumn{2}{c} {Pearson's correlation test} & \multicolumn{4}{c} {Independent t-test} \\
+%	\midrule	
+%	\multicolumn{2}{c} {Gender} & \multicolumn{2}{c} {Activity level} & \multicolumn{2}{c} {Gender} \\
+%	\midrule
+%	Males & Females & 1st level & 6th level & Males & Females \\
+%	\midrule
+%	\multicolumn{2}{c} {BMI vs. SP} & \multicolumn{2}{c} {Systolic pressure} & \multicolumn{2}{c} {Systolic Pressure} \\
+%	\multicolumn{2}{c} {BMI vs. DP} & \multicolumn{2}{c} {Diastolic pressure} & \multicolumn{2}{c} {Diastolic pressure} \\
+%	\multicolumn{2}{c} {BMI vs. MAP} & \multicolumn{2}{c} {MAP} & \multicolumn{2}{c} {MAP} \\
+%	\multicolumn{2}{c} {W:H ratio vs. SP} & \multicolumn{2}{c} {BMI} & \multicolumn{2}{c} {BMI} \\
+%	\multicolumn{2}{c} {W:H ratio vs. DP} & \multicolumn{2}{c} {W:H ratio} & \multicolumn{2}{c} {W:H ratio} \\
+%	\multicolumn{2}{c} {W:H ratio vs. MAP} & \multicolumn{2}{c} {\% Body fat} & \multicolumn{2}{c} {\% Body fat} \\
+%	\multicolumn{2}{c} {} & \multicolumn{2}{c} {Height} & \multicolumn{2}{c} {Height} \\
+%	\multicolumn{2}{c} {} & \multicolumn{2}{c} {Weight} & \multicolumn{2}{c} {Weight} \\
+%	\multicolumn{2}{c} {} & \multicolumn{2}{c} {Heart rate} & \multicolumn{2}{c} {Heart rate} \\
+%	\bottomrule
+%	\end{tabular}
+%	\caption{Parameters that were analysed and related statistical test performed for current study. BMI - body mass index; SP - systolic pressure; DP - diastolic pressure; MAP - mean arterial pressure; W:H ratio - waist to hip ratio.}
+%	\label{label:tests}
+%\end{table}
