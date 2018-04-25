@@ -7,10 +7,76 @@ import pandas as pd
 import numpy as np
 from numpy import genfromtxt
 from sklearn import datasets
+from sklearn import preprocessing
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
 
 
 filename = "database.csv"
 
-dataset = pd.read_csv(filename, usecols=[4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 16, 17, 19, 20, 23], dtype=str)
+columns = [0]
+columns.extend(range(3, 17))
 
-print(dataset)
+dataset = pd.read_csv(filename, usecols=columns)
+
+
+enc = preprocessing.LabelEncoder()
+
+enc.fit(dataset.Agency_Type)
+agency_type = enc.transform(dataset.Agency_Type)
+
+# enc.fit(dataset.City)
+# city = enc.transform(dataset.City)
+#
+# enc.fit(dataset.State)
+# state = enc.transform(dataset.State)
+
+enc.fit(dataset.Month)
+month = enc.transform(dataset.Month)
+
+enc.fit(dataset.Crime_Type)
+crime_type = enc.transform(dataset.Crime_Type)
+
+enc.fit(dataset.Crime_Solved)
+crime_solved = enc.transform(dataset.Crime_Solved)
+
+enc.fit(dataset.Victim_Sex)
+victim_Sex = enc.transform(dataset.Victim_Sex)
+
+age = []
+
+
+enc.fit(dataset.Victim_Race)
+victim_race = enc.transform(dataset.Victim_Race)
+
+enc.fit(dataset.Perpetrator_Sex)
+perpetrator_sex = enc.transform(dataset.Perpetrator_Sex)
+
+enc.fit(dataset.Perpetrator_Race)
+perpetrator_race = enc.transform(dataset.Perpetrator_Race)
+
+enc.fit(dataset.Relationship)
+relationship = enc.transform(dataset.Relationship)
+
+enc.fit(dataset.Weapon)
+weapon = enc.transform(dataset.Weapon)
+
+# enc.fit(dataset.Record_Source)
+# record_Source = enc.transform(dataset.Record_Source)
+
+data_matrix = np.c_[agency_type, dataset.Year.values, month, crime_type, crime_solved, victim_Sex, dataset.Victim_Age.values,
+               victim_race, perpetrator_sex, dataset.Perpetrator_Age.values, perpetrator_race, relationship, weapon,
+               dataset.Additional_Victims_Count.values, dataset.Additional_Perpetrators_Count.values]
+data_train, data_test, y_train, y_test = train_test_split(data_matrix, data_matrix[:,3], test_size=0.3)
+
+naive_bayes = GaussianNB()
+
+testing = np.delete(data_test, 4, 1)
+training = np.delete(data_train, 4, 1)
+naive_bayes.fit(training, data_train[:,4])
+result = naive_bayes.predict(testing)
+
+conf_matrix = confusion_matrix(data_test[:,4], result)
+
+print(conf_matrix)
