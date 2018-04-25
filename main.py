@@ -9,7 +9,7 @@ from numpy import genfromtxt
 from sklearn import datasets
 from sklearn import preprocessing
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.metrics import confusion_matrix
 
 
@@ -84,6 +84,15 @@ conf_matrix = confusion_matrix(data_test[:,4], nb_result)
 
 print(conf_matrix)
 
-
+#cross validation
+data_without_target = np.delete(data_matrix, 4, 1)
+target = data_matrix[:,4]
+k_fold = KFold(n_splits=5)
+for train_indices, test_indices in k_fold.split(target):
+	naive_bayes.fit(data_without_target[train_indices], target[train_indices])
+	result = naive_bayes.predict(data_without_target[test_indices])
+	conf_matrix = confusion_matrix(target[test_indices], result)
+	print(conf_matrix)
+	print(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
 
 
