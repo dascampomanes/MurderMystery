@@ -9,7 +9,7 @@ from numpy import genfromtxt
 from sklearn import datasets
 from sklearn import preprocessing
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.metrics import confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -19,6 +19,7 @@ columns = [0]
 columns.extend(range(3, 17))
 
 dataset = pd.read_csv(filename, usecols=columns)
+
 
 enc = preprocessing.LabelEncoder()
 
@@ -42,6 +43,9 @@ crime_solved = enc.transform(dataset.Crime_Solved)
 
 enc.fit(dataset.Victim_Sex)
 victim_Sex = enc.transform(dataset.Victim_Sex)
+
+age = []
+
 
 enc.fit(dataset.Victim_Race)
 victim_race = enc.transform(dataset.Victim_Race)
@@ -67,6 +71,7 @@ data_matrix = np.c_[
     dataset.Additional_Victims_Count.values, dataset.Additional_Perpetrators_Count.values]
 
 data_train, data_test, y_train, y_test = train_test_split(data_matrix, data_matrix[:, 3], test_size=0.3)
+
 
 # testing Naive Bayes
 naive_bayes = GaussianNB()
@@ -94,3 +99,16 @@ conf_matrix = confusion_matrix(data_test[:, 8], knn_result[:, 0])
 
 print("Perpetrator sex confusion matrix:")
 print(conf_matrix)
+
+#cross validation
+data_without_target = np.delete(data_matrix, 4, 1)
+target = data_matrix[:,4]
+k_fold = KFold(n_splits=5)
+for train_indices, test_indices in k_fold.split(target):
+	naive_bayes.fit(data_without_target[train_indices], target[train_indices])
+	result = naive_bayes.predict(data_without_target[test_indices])
+	conf_matrix = confusion_matrix(target[test_indices], result)
+	print(conf_matrix)
+	print(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
+
+
