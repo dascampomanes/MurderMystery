@@ -70,13 +70,20 @@ data_matrix = np.c_[agency_type, dataset.Year.values, month, crime_type, crime_s
                dataset.Additional_Victims_Count.values, dataset.Additional_Perpetrators_Count.values]
 data_train, data_test, y_train, y_test = train_test_split(data_matrix, data_matrix[:,3], test_size=0.3)
 
+
+# testing Naive Bayes
 naive_bayes = GaussianNB()
 
-testing = np.delete(data_test, 4, 1)
-training = np.delete(data_train, 4, 1)
-naive_bayes.fit(training, data_train[:,4])
-result = naive_bayes.predict(testing)
+bayes_train_data = np.delete(data_train, 4, 1)
+bayes_test_data = np.delete(data_test, 4, 1)
 
-conf_matrix = confusion_matrix(data_test[:,4], result)
+naive_bayes.fit(bayes_train_data, data_train[:, 4])
+nb_result = naive_bayes.predict(bayes_test_data)
+
+conf_matrix = confusion_matrix(data_test[:,4], nb_result)
 
 print(conf_matrix)
+
+
+
+
