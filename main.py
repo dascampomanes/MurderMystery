@@ -20,7 +20,6 @@ columns.extend(range(3, 17))
 
 dataset = pd.read_csv(filename, usecols=columns)
 
-
 enc = preprocessing.LabelEncoder()
 
 enc.fit(dataset.Agency_Type)
@@ -45,7 +44,6 @@ enc.fit(dataset.Victim_Sex)
 victim_Sex = enc.transform(dataset.Victim_Sex)
 
 age = []
-
 
 enc.fit(dataset.Victim_Race)
 victim_race = enc.transform(dataset.Victim_Race)
@@ -72,7 +70,6 @@ data_matrix = np.c_[
 
 data_train, data_test, y_train, y_test = train_test_split(data_matrix, data_matrix[:, 3], test_size=0.3)
 
-
 # testing Naive Bayes
 naive_bayes = GaussianNB()
 
@@ -85,6 +82,18 @@ nb_result = naive_bayes.predict(bayes_test_data)
 conf_matrix = confusion_matrix(data_test[:, 4], nb_result)
 print("Crime solved confusion matrix:")
 print(conf_matrix)
+
+# cross validation
+data_without_target = np.delete(data_matrix, 4, 1)
+target = data_matrix[:, 4]
+k_fold = KFold(n_splits=5)
+for train_indices, test_indices in k_fold.split(target):
+    naive_bayes.fit(data_without_target[train_indices], target[train_indices])
+    result = naive_bayes.predict(data_without_target[test_indices])
+    conf_matrix = confusion_matrix(target[test_indices], result)
+    print(conf_matrix)
+    print(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(
+        data_without_target[test_indices], target[test_indices]))
 
 # testing knn
 knn = KNeighborsClassifier()
