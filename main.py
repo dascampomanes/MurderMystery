@@ -98,26 +98,33 @@ for train_indices, test_indices in k_fold.split(target):
 # testing knn
 knn = KNeighborsClassifier()
 
-knn_train_data = np.delete(data_train, np.s_[8:10], 1)
-knn_test_data = np.delete(data_test, np.s_[8:10], 1)
+knn_train_data = np.delete(data_train, 8, 1)
+knn_test_data = np.delete(data_test, 8, 1)
 
-knn.fit(knn_train_data, data_train[:, np.s_[8:10]])
+knn.fit(knn_train_data, data_train[:, 8])
 knn_result = knn.predict(knn_test_data)
 
-conf_matrix = confusion_matrix(data_test[:, 8], knn_result[:, 0])
+conf_matrix = confusion_matrix(data_test[:, 8], knn_result)
 
 print("Perpetrator sex confusion matrix:")
 print(conf_matrix)
 
-#cross validation
-data_without_target = np.delete(data_matrix, 4, 1)
-target = data_matrix[:,4]
-k_fold = KFold(n_splits=5)
+
+# cross validation knn
+scores = []
+data_without_target = np.delete(data_matrix, 8, 1)
+target = data_matrix[:, 8]
+k_fold = KFold(n_splits=10)
 for train_indices, test_indices in k_fold.split(target):
-	naive_bayes.fit(data_without_target[train_indices], target[train_indices])
-	result = naive_bayes.predict(data_without_target[test_indices])
-	conf_matrix = confusion_matrix(target[test_indices], result)
-	print(conf_matrix)
-	print(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
+    scores.append(knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
 
+print("knn Perpetrator sex accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
 
+scores = []
+data_without_target = np.delete(data_matrix, 9, 1)
+target = data_matrix[:,9]
+k_fold = KFold(n_splits=10)
+for train_indices, test_indices in k_fold.split(target):
+    scores.append(knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
+
+print("knn Perpetrator age accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
