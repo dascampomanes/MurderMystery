@@ -5,11 +5,13 @@ from tkinter import *
 
 import numpy as np
 import pandas as pd
+import graphviz
 from sklearn import preprocessing
 from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import train_test_split, KFold
+from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import tree
 
 filename = "database.csv"
 
@@ -24,6 +26,7 @@ enc = preprocessing.LabelEncoder()
 
 enc.fit(dataset.Agency_Type)
 agency_type = enc.transform(dataset.Agency_Type)
+#['County Police' 'Municipal Police' 'Regional Police' 'Sheriff' 'Special Police' 'State Police' 'Tribal Police']
 
 cities_set = set(cities_dataset.City)
 city_enc = preprocessing.LabelEncoder()
@@ -63,9 +66,10 @@ relationship = enc.transform(dataset.Relationship)
 weapon_enc = preprocessing.LabelEncoder()
 weapon_enc.fit(dataset.Weapon)
 weapon = weapon_enc.transform(dataset.Weapon)
+#['Blunt Object' 'Drowning' 'Drugs' 'Explosives' 'Fall' 'Fire' 'Firearm' 'Gun' 'Handgun' 'Knife' 'Poison' 'Rifle' 'Shotgun' 'Strangulation' 'Suffocation' 'Unknown']
 
-# enc.fit(dataset.Record_Source)
-# record_Source = enc.transform(dataset.Record_Source)
+enc.fit(dataset.Record_Source)
+record_Source = enc.transform(dataset.Record_Source)
 
 interactive_data = np.c_[cities, victim_Sex, dataset.Victim_Age.values, weapon]
 
@@ -148,20 +152,24 @@ naive_bayes.fit(bayes_train_data, data_train[:, 4])
 nb_result = naive_bayes.predict(bayes_test_data)
 
 conf_matrix = confusion_matrix(data_test[:, 4], nb_result)
-print("Crime solved confusion matrix:")
+print("partitioning bayes crime solved confusion matrix:")
 print(conf_matrix)
+print(naive_bayes.fit(bayes_train_data, data_train[:, 4]).score(bayes_test_data, data_test[:, 4]))
 
-# cross validation
+print("cross validation bayes crime solved confusion matrix:")
+#cross validation
+scores = []
 data_without_target = np.delete(data_matrix, 4, 1)
-target = data_matrix[:, 4]
+target = data_matrix[:,4]
 k_fold = KFold(n_splits=5)
 for train_indices, test_indices in k_fold.split(target):
-    naive_bayes.fit(data_without_target[train_indices], target[train_indices])
-    result = naive_bayes.predict(data_without_target[test_indices])
-    conf_matrix = confusion_matrix(target[test_indices], result)
-    print(conf_matrix)
-    print(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(
-        data_without_target[test_indices], target[test_indices]))
+	naive_bayes.fit(data_without_target[train_indices], target[train_indices])
+	result = naive_bayes.predict(data_without_target[test_indices])
+	conf_matrix = confusion_matrix(target[test_indices], result)
+	print(conf_matrix)
+	scores.append(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
+
+print("Accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
 
 # testing knn
 knn = KNeighborsClassifier()
@@ -199,3 +207,30 @@ for train_indices, test_indices in k_fold.split(target):
                                                                                  target[test_indices]))
 
 print("knn Perpetrator age accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+
+###Decision trees
+
+
+clf = tree.DecisionTreeClassifier()
+scores = []
+data_without_target = np.c_[
+    agency_type, dataset.Year.values, month, crime_type, victim_Sex, dataset.Victim_Age.values,
+    victim_race, weapon,
+    dataset.Additional_Victims_Count.values]
+target = data_matrix[:,4]
+k_fold = KFold(n_splits=10)
+for train_indices, test_indices in k_fold.split(target):
+	clf.fit(data_without_target[train_indices], target[train_indices])
+	result = clf.predict(data_without_target[test_indices])
+	conf_matrix = confusion_matrix(target[test_indices], result)
+	print(conf_matrix)
+	scores.append(clf.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
+
+print("Accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores)))
+
+names = ["Agency_Type","Year","Month","Crime_Type","Victim_Sex","Victim_Age","Victim_Race","Weapon","Additional_Victims_Count"]
+classes = ["crime NOT solved", "crime solved"]
+clf.fit(data_without_target, target)
+dot_data = tree.export_graphviz(clf, feature_names=names, class_names=classes, out_file=None, max_depth=3, filled=True, rounded=True, special_characters=True) 
+graph = graphviz.Source(dot_data) 
+graph.render("MurderMystery")
