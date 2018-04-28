@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 
 
-import scipy
-import os
-import pandas as pd
+from tkinter import *
+
 import numpy as np
-from numpy import genfromtxt
-from sklearn import datasets
+import pandas as pd
 from sklearn import preprocessing
-from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split, KFold
+from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 
 filename = "database.csv"
@@ -20,13 +18,17 @@ columns.extend(range(3, 17))
 
 dataset = pd.read_csv(filename, usecols=columns)
 
+cities_dataset = pd.read_csv(filename, usecols=[1])
+
 enc = preprocessing.LabelEncoder()
 
 enc.fit(dataset.Agency_Type)
 agency_type = enc.transform(dataset.Agency_Type)
 
-# enc.fit(dataset.City)
-# city = enc.transform(dataset.City)
+cities_set = set(cities_dataset.City)
+city_enc = preprocessing.LabelEncoder()
+city_enc.fit(cities_dataset.City)
+cities = city_enc.transform(cities_dataset.City)
 #
 # enc.fit(dataset.State)
 # state = enc.transform(dataset.State)
@@ -40,8 +42,9 @@ crime_type = enc.transform(dataset.Crime_Type)
 enc.fit(dataset.Crime_Solved)
 crime_solved = enc.transform(dataset.Crime_Solved)
 
-enc.fit(dataset.Victim_Sex)
-victim_Sex = enc.transform(dataset.Victim_Sex)
+victim_sex_enc = preprocessing.LabelEncoder()
+victim_sex_enc.fit(dataset.Victim_Sex)
+victim_Sex = victim_sex_enc.transform(dataset.Victim_Sex)
 
 age = []
 
@@ -57,11 +60,76 @@ perpetrator_race = enc.transform(dataset.Perpetrator_Race)
 enc.fit(dataset.Relationship)
 relationship = enc.transform(dataset.Relationship)
 
-enc.fit(dataset.Weapon)
-weapon = enc.transform(dataset.Weapon)
+weapon_enc = preprocessing.LabelEncoder()
+weapon_enc.fit(dataset.Weapon)
+weapon = weapon_enc.transform(dataset.Weapon)
 
 # enc.fit(dataset.Record_Source)
 # record_Source = enc.transform(dataset.Record_Source)
+
+interactive_data = np.c_[cities, victim_Sex, dataset.Victim_Age.values, weapon]
+
+knn = KNeighborsClassifier()
+
+scores = []
+data_without_target = np.delete(interactive_data, 3, 1)
+target = interactive_data[:, 3]
+k_fold = KFold(n_splits=5)
+for train_indices, test_indices in k_fold.split(target):
+    scores.append(
+        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                 target[test_indices]))
+
+print("knn weapon accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+
+root = Tk()
+root.title("Where are you travelling?")
+
+# Add a grid
+mainframe = Frame(root)
+mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+mainframe.columnconfigure(0, weight=1)
+mainframe.rowconfigure(0, weight=1)
+mainframe.pack(pady=100, padx=100)
+
+# Create a Tkinter variable
+tkcity = StringVar(root)
+
+cities_set = sorted(cities_set)
+# Dictionary with options
+tkcity.set('Anchorage')  # set the default option
+
+citypopupMenu = OptionMenu(mainframe, tkcity, *cities_set[:50])
+Label(mainframe, text="Choose the city").grid(row=1, column=1)
+citypopupMenu.grid(row=2, column=1)
+
+tkgender = StringVar(root)
+
+genders = set(dataset.Victim_Sex.values)
+genderpopupMenu = OptionMenu(mainframe, tkgender, *genders)
+Label(mainframe, text="Choose your gender").grid(row=3, column=1)
+genderpopupMenu.grid(row=4, column=1)
+
+tkage = StringVar(root)
+ages = range(0, 100)
+agepopupMenu = OptionMenu(mainframe, tkage, *ages)
+Label(mainframe, text="Choose your age").grid(row=5, column=1)
+agepopupMenu.grid(row=6, column=1)
+
+
+# Ok button trigger
+def ok_pressed():
+    print(tkcity.get() + tkage.get() + tkgender.get())
+    to_predict = [
+        [city_enc.transform([tkcity.get()])[0], victim_sex_enc.transform([tkgender.get()])[0], int(tkage.get())]]
+    res = knn.predict(to_predict)
+    print("You're going to die with a: "+weapon_enc.inverse_transform(res[0]))
+
+
+okButton = Button(mainframe, text="OK", command=ok_pressed)
+okButton.grid(row=7, column=1)
+
+root.mainloop()
 
 data_matrix = np.c_[
     agency_type, dataset.Year.values, month, crime_type, crime_solved, victim_Sex, dataset.Victim_Age.values,
@@ -109,22 +177,25 @@ conf_matrix = confusion_matrix(data_test[:, 8], knn_result)
 print("Perpetrator sex confusion matrix:")
 print(conf_matrix)
 
-
 # cross validation knn
 scores = []
 data_without_target = np.delete(data_matrix, 8, 1)
 target = data_matrix[:, 8]
 k_fold = KFold(n_splits=10)
 for train_indices, test_indices in k_fold.split(target):
-    scores.append(knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
+    scores.append(
+        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                 target[test_indices]))
 
 print("knn Perpetrator sex accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
 
 scores = []
 data_without_target = np.delete(data_matrix, 9, 1)
-target = data_matrix[:,9]
+target = data_matrix[:, 9]
 k_fold = KFold(n_splits=10)
 for train_indices, test_indices in k_fold.split(target):
-    scores.append(knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
+    scores.append(
+        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                 target[test_indices]))
 
 print("knn Perpetrator age accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
