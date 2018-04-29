@@ -1,8 +1,9 @@
 \select@language {english}
 \contentsline {section}{\numberline {1}Introduction}{2}
-\contentsline {section}{\numberline {2}Data Mining Algorithms}{2}
-\contentsline {paragraph}{Naive Bayes}{2}
-\contentsline {paragraph}{Decision Tree}{2}
-\contentsline {paragraph}{K-Nearest Neighbors (KNN)}{2}
-\contentsline {paragraph}{K-Nearest Neighbors (KNN) with PCA}{2}
-\contentsline {section}{\numberline {3}Final Thoughts}{2}
+\contentsline {section}{\numberline {2}Preprocessing}{2}
+\contentsline {section}{\numberline {3}Data Mining Algorithms}{3}
+\contentsline {paragraph}{Naive Bayes}{3}
+\contentsline {paragraph}{Decision Tree}{3}
+\contentsline {paragraph}{K-Nearest Neighbours (KNN)}{6}
+\contentsline {paragraph}{Predictor Application}{6}
+\contentsline {section}{\numberline {4}Final Thoughts}{6}
