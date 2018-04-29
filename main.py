@@ -69,21 +69,22 @@ weapon = weapon_enc.transform(dataset.Weapon)
 
 interactive_data = np.c_[cities, victim_Sex, dataset.Victim_Age.values, weapon]
 
-knn = KNeighborsClassifier()
+for n in range(5, 30, 3):
+    knn = KNeighborsClassifier(n_neighbors=n)
 
-scores = []
-data_without_target = np.delete(interactive_data, 3, 1)
-target = interactive_data[:, 3]
-k_fold = KFold(n_splits=5)
-for train_indices, test_indices in k_fold.split(target):
-    scores.append(
-        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
-                                                                                 target[test_indices]))
+    scores = []
+    data_without_target = np.delete(interactive_data, 3, 1)
+    target = interactive_data[:, 3]
+    k_fold = KFold(n_splits=5)
+    for train_indices, test_indices in k_fold.split(target):
+        scores.append(
+            knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                     target[test_indices]))
 
-print("knn weapon accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+    print("knn, k = " + str(n) +" weapon accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
 
 root = Tk()
-root.title("Where are you travelling?")
+root.title("Choose the victim data?")
 
 # Add a grid
 mainframe = Frame(root)
@@ -104,6 +105,7 @@ Label(mainframe, text="Choose the city").grid(row=1, column=1)
 citypopupMenu.grid(row=2, column=1)
 
 tkgender = StringVar(root)
+tkgender.set('Male')  # set the default option
 
 genders = set(dataset.Victim_Sex.values)
 genderpopupMenu = OptionMenu(mainframe, tkgender, *genders)
@@ -111,6 +113,7 @@ Label(mainframe, text="Choose your gender").grid(row=3, column=1)
 genderpopupMenu.grid(row=4, column=1)
 
 tkage = StringVar(root)
+tkage.set('30')  # set the default option
 ages = range(0, 100)
 agepopupMenu = OptionMenu(mainframe, tkage, *ages)
 Label(mainframe, text="Choose your age").grid(row=5, column=1)
@@ -123,7 +126,7 @@ def ok_pressed():
     to_predict = [
         [city_enc.transform([tkcity.get()])[0], victim_sex_enc.transform([tkgender.get()])[0], int(tkage.get())]]
     res = knn.predict(to_predict)
-    print("You're going to die with a: "+weapon_enc.inverse_transform(res[0]))
+    print("The victim will die with a: "+weapon_enc.inverse_transform(res[0]))
 
 
 okButton = Button(mainframe, text="OK", command=ok_pressed)
@@ -189,13 +192,15 @@ for train_indices, test_indices in k_fold.split(target):
 
 print("knn Perpetrator sex accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
 
-scores = []
-data_without_target = np.delete(data_matrix, 9, 1)
-target = data_matrix[:, 9]
-k_fold = KFold(n_splits=10)
-for train_indices, test_indices in k_fold.split(target):
-    scores.append(
-        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
-                                                                                 target[test_indices]))
+for n in range(5, 30, 3):
+    knn = KNeighborsClassifier(n_neighbors=n)
+    scores = []
+    data_without_target = np.delete(data_matrix, 9, 1)
+    target = data_matrix[:, 9]
+    k_fold = KFold(n_splits=10)
+    for train_indices, test_indices in k_fold.split(target):
+        scores.append(
+            knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                     target[test_indices]))
 
-print("knn Perpetrator age accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+    print("knn, k = " + str(n) +" Perpetrator age accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
