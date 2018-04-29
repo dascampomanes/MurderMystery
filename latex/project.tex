@@ -98,7 +98,7 @@ We also got rid of some of the columns that weren't clear or didn't have helpful
 
 \section{Data Mining Algorithms}
 
-\paragraph{Naive Bayes}
+\subsection{Naive Bayes}
 
 The first thing we wanted to see was if we could predict if a crime would be likely to be solved or not. For this purpose, we tried a naive bayes classifier, as it seemed a good fit for predicting a binary variable, and also because it's simple to implement, and we could introduce ourselves to the sklearn library.
 We started with partitioning to get the first results quickly, and they were pretty surprising, as can be seen in figure 	 \ref{fig:PNBCM}.
@@ -119,7 +119,7 @@ Even if we tried to change the training and test set, the results were almost id
   \label{fig:CVNBCM}
 \end{figure}
 
-\paragraph{Decision Tree}
+\subsection{Decision Tree}
 
 After the results given by the Naive Bayes predictor, we were really interested to see if and what variables were causing this anomaly. We thought a decision tree could give us that information, and also it seemed like it would be a good fit for the problem. As before, we configured the classifier to predict if a crime was solved or not. The results of the cross validation were similar to Naive Bayes, as seen in figure \ref{fig:PDTCM}.
 
@@ -166,9 +166,9 @@ As we can see, the classification is much worse, but seems like a legit one. We 
 
 So, even if the classification has only an accuracy of approximately 60 percent, we managed to understand the key characteristics of tackling the problem of solving a crime which is what we were looking for.
 
-\paragraph{K-Nearest Neighbours (KNN)}
+\subsection{K-Nearest Neighbours (KNN)}
 
-\paragraph{Predictor Application}
+\subsection{Predictor Application}
 
 \section{Final Thoughts} 
 After trying out this library we have reached some mixed feelings about it:

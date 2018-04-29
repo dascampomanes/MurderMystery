@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.11.30)  29 APR 2018 13:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.11.30)  29 APR 2018 13:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -617,8 +617,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 77--89
 
  []
 
-LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <12> not available
-(Font)              Font shape `T1/futs/b/n' tried instead on input line 103.
+LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/futs/b/n' tried instead on input line 101.
 [2] <../Images/PartitioningNaiveBayesCM.png, id=15, 449.68pt x 66.2475pt>
 File: ../Images/PartitioningNaiveBayesCM.png Graphic file (type png)
 
@@ -635,8 +635,8 @@ File: ../Images/CVNaiveBayesCM.png Graphic file (type png)
 <use ../Images/CVNaiveBayesCM.png>
 Package pdftex.def Info: ../Images/CVNaiveBayesCM.png used on input line 117.
 (pdftex.def)             Requested size: 226.48395pt x 196.15164pt.
-
-<../Images/PerfectDecisionTreeCM.png, id=18, 237.88875pt x 360.34625pt>
+ [3 <../Images/PartitioningNaiveBayesCM.png> <../Images/CVNaiveBayesCM.png>]
+<../Images/PerfectDecisionTreeCM.png, id=23, 237.88875pt x 360.34625pt>
 File: ../Images/PerfectDecisionTreeCM.png Graphic file (type png)
 
 <use ../Images/PerfectDecisionTreeCM.png>
@@ -644,10 +644,6 @@ Package pdftex.def Info: ../Images/PerfectDecisionTreeCM.png used on input line
  128.
 (pdftex.def)             Requested size: 113.24197pt x 171.53464pt.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[3 <../Images/PartitioningNaiveBayesCM.png> <../Images/CVNaiveBayesCM.png>]
 <../Images/PerfectDecisionTree.pdf, id=24, 1550.79375pt x 574.145pt>
 File: ../Images/PerfectDecisionTree.pdf Graphic file (type pdf)
 
@@ -655,8 +651,8 @@ File: ../Images/PerfectDecisionTree.pdf Graphic file (type pdf)
 Package pdftex.def Info: ../Images/PerfectDecisionTree.pdf used on input line 1
 38.
 (pdftex.def)             Requested size: 452.9679pt x 167.698pt.
-
-<../Images/RealDecisionTreeCM.png, id=25, 240.9pt x 362.35374pt>
+ [4 <../Images/PerfectDecisionTreeCM.png> <../Images/PerfectDecisionTree.pdf>]
+<../Images/RealDecisionTreeCM.png, id=52, 240.9pt x 362.35374pt>
 File: ../Images/RealDecisionTreeCM.png Graphic file (type png)
 
 <use ../Images/RealDecisionTreeCM.png>
@@ -664,41 +660,32 @@ Package pdftex.def Info: ../Images/RealDecisionTreeCM.png used on input line 14
 8.
 (pdftex.def)             Requested size: 113.24197pt x 170.33392pt.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<../Images/RealDecisionTree.pdf, id=26, 1475.5125pt x 574.145pt>
+<../Images/RealDecisionTree.pdf, id=53, 1475.5125pt x 574.145pt>
 File: ../Images/RealDecisionTree.pdf Graphic file (type pdf)
 
 <use ../Images/RealDecisionTree.pdf>
 Package pdftex.def Info: ../Images/RealDecisionTree.pdf used on input line 155.
 
 (pdftex.def)             Requested size: 452.9679pt x 176.25725pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[4 <../Images/PerfectDecisionTreeCM.png> <../Images/PerfectDecisionTree.pdf>]
-[5 <../Images/RealDecisionTreeCM.png> <../Images/RealDecisionTree.pdf>]
-
+ [5 <../Images/RealDecisionTreeCM.png> <../Images/RealDecisionTree.pdf>] [6] 
 AED: lastpage setting LastPage
-[6] (./project.aux) ) 
+[7] (./project.aux) ) 
 Here is how much of TeX's memory you used:
- 6860 strings out of 492995
- 106567 string characters out of 6132703
+ 6852 strings out of 492995
+ 106495 string characters out of 6132703
  300929 words of memory out of 5000000
  10103 multiletter control sequences out of 15000+600000
- 117362 words of font info for 196 fonts, out of 8000000 for 9000
+ 116822 words of font info for 190 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,10n,43p,569b,354s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8
 r.enc}</usr/local/texlive/2017/texmf-dist/fonts/type1/adobe/utopia/putb8a.pfb><
 /usr/local/texlive/2017/texmf-dist/fonts/type1/adobe/utopia/putr8a.pfb></usr/lo
 cal/texlive/2017/texmf-dist/fonts/type1/adobe/utopia/putri8a.pfb>
-Output written on project.pdf (7 pages, 153767 bytes).
+Output written on project.pdf (8 pages, 154613 bytes).
 PDF statistics:
- 108 PDF objects out of 1000 (max. 8388607)
- 77 compressed objects within 1 object stream
+ 111 PDF objects out of 1000 (max. 8388607)
+ 79 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  38943 words of extra memory for PDF output out of 42996 (max. 10000000)
 
