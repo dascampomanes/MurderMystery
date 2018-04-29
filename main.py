@@ -71,73 +71,6 @@ weapon_enc.fit(dataset.Weapon)
 weapon = weapon_enc.transform(dataset.Weapon)
 #['Blunt Object' 'Drowning' 'Drugs' 'Explosives' 'Fall' 'Fire' 'Firearm' 'Gun' 'Handgun' 'Knife' 'Poison' 'Rifle' 'Shotgun' 'Strangulation' 'Suffocation' 'Unknown']
 
-enc.fit(dataset.Record_Source)
-record_Source = enc.transform(dataset.Record_Source)
-
-interactive_data = np.c_[cities, victim_Sex, dataset.Victim_Age.values, weapon]
-
-knn = KNeighborsClassifier()
-
-scores = []
-data_without_target = np.delete(interactive_data, 3, 1)
-target = interactive_data[:, 3]
-k_fold = KFold(n_splits=5)
-for train_indices, test_indices in k_fold.split(target):
-    scores.append(
-        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
-                                                                                 target[test_indices]))
-
-print("knn weapon accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
-
-root = Tk()
-root.title("Where are you travelling?")
-
-# Add a grid
-mainframe = Frame(root)
-mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-mainframe.columnconfigure(0, weight=1)
-mainframe.rowconfigure(0, weight=1)
-mainframe.pack(pady=100, padx=100)
-
-# Create a Tkinter variable
-tkcity = StringVar(root)
-
-cities_set = sorted(cities_set)
-# Dictionary with options
-tkcity.set('Anchorage')  # set the default option
-
-citypopupMenu = OptionMenu(mainframe, tkcity, *cities_set[:50])
-Label(mainframe, text="Choose the city").grid(row=1, column=1)
-citypopupMenu.grid(row=2, column=1)
-
-tkgender = StringVar(root)
-
-genders = set(dataset.Victim_Sex.values)
-genderpopupMenu = OptionMenu(mainframe, tkgender, *genders)
-Label(mainframe, text="Choose your gender").grid(row=3, column=1)
-genderpopupMenu.grid(row=4, column=1)
-
-tkage = StringVar(root)
-ages = range(0, 100)
-agepopupMenu = OptionMenu(mainframe, tkage, *ages)
-Label(mainframe, text="Choose your age").grid(row=5, column=1)
-agepopupMenu.grid(row=6, column=1)
-
-
-# Ok button trigger
-def ok_pressed():
-    print(tkcity.get() + tkage.get() + tkgender.get())
-    to_predict = [
-        [city_enc.transform([tkcity.get()])[0], victim_sex_enc.transform([tkgender.get()])[0], int(tkage.get())]]
-    res = knn.predict(to_predict)
-    print("You're going to die with a: "+weapon_enc.inverse_transform(res[0]))
-
-
-okButton = Button(mainframe, text="OK", command=ok_pressed)
-okButton.grid(row=7, column=1)
-
-root.mainloop()
-
 data_matrix = np.c_[
     agency_type, dataset.Year.values, month, crime_type, crime_solved, victim_Sex, dataset.Victim_Age.values,
     victim_race, perpetrator_sex, dataset.Perpetrator_Age.values, perpetrator_race, relationship, weapon,
@@ -277,7 +210,7 @@ clf.fit(data_without_target, target)
 names = ["Agency_Type","Year","Month","Crime_Type","Victim_Sex","Victim_Age","Victim_Race","Weapon","Additional_Victims_Count"]
 classes = ["crime NOT solved", "crime solved"]
 dot_data = tree.export_graphviz(clf, feature_names=names, class_names=classes, out_file=None, max_depth=3, filled=True, rounded=True, special_characters=True)
-graph = graphviz.Source(dot_data) 
+graph = graphviz.Source(dot_data)
 graph.render("MurderMystery")
 
 interactive_data = np.c_[cities, victim_Sex, dataset.Victim_Age.values, weapon]
