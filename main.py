@@ -26,7 +26,7 @@ enc = preprocessing.LabelEncoder()
 
 enc.fit(dataset.Agency_Type)
 agency_type = enc.transform(dataset.Agency_Type)
-#['County Police' 'Municipal Police' 'Regional Police' 'Sheriff' 'Special Police' 'State Police' 'Tribal Police']
+# ['County Police' 'Municipal Police' 'Regional Police' 'Sheriff' 'Special Police' 'State Police' 'Tribal Police']
 
 cities_set = set(cities_dataset.City)
 city_enc = preprocessing.LabelEncoder()
@@ -66,10 +66,114 @@ relationship = enc.transform(dataset.Relationship)
 weapon_enc = preprocessing.LabelEncoder()
 weapon_enc.fit(dataset.Weapon)
 weapon = weapon_enc.transform(dataset.Weapon)
-#['Blunt Object' 'Drowning' 'Drugs' 'Explosives' 'Fall' 'Fire' 'Firearm' 'Gun' 'Handgun' 'Knife' 'Poison' 'Rifle' 'Shotgun' 'Strangulation' 'Suffocation' 'Unknown']
+# ['Blunt Object' 'Drowning' 'Drugs' 'Explosives' 'Fall' 'Fire' 'Firearm' 'Gun' 'Handgun' 'Knife' 'Poison' 'Rifle' 'Shotgun' 'Strangulation' 'Suffocation' 'Unknown']
 
-enc.fit(dataset.Record_Source)
-record_Source = enc.transform(dataset.Record_Source)
+data_matrix = np.c_[
+    agency_type, dataset.Year.values, month, crime_type, crime_solved, victim_Sex, dataset.Victim_Age.values,
+    victim_race, perpetrator_sex, dataset.Perpetrator_Age.values, perpetrator_race, relationship, weapon,
+    dataset.Additional_Victims_Count.values, dataset.Additional_Perpetrators_Count.values]
+
+data_train, data_test, y_train, y_test = train_test_split(data_matrix, data_matrix[:, 3], test_size=0.3)
+
+# testing Naive Bayes
+naive_bayes = GaussianNB()
+
+bayes_train_data = np.delete(data_train, 4, 1)
+bayes_test_data = np.delete(data_test, 4, 1)
+
+naive_bayes.fit(bayes_train_data, data_train[:, 4])
+nb_result = naive_bayes.predict(bayes_test_data)
+
+conf_matrix = confusion_matrix(data_test[:, 4], nb_result)
+print("partitioning bayes crime solved confusion matrix:")
+print(conf_matrix)
+print(naive_bayes.fit(bayes_train_data, data_train[:, 4]).score(bayes_test_data, data_test[:, 4]))
+
+print("cross validation bayes crime solved confusion matrix:")
+# cross validation
+scores = []
+data_without_target = np.delete(data_matrix, 4, 1)
+target = data_matrix[:, 4]
+k_fold = KFold(n_splits=5)
+for train_indices, test_indices in k_fold.split(target):
+    naive_bayes.fit(data_without_target[train_indices], target[train_indices])
+    result = naive_bayes.predict(data_without_target[test_indices])
+    conf_matrix = confusion_matrix(target[test_indices], result)
+    print(conf_matrix)
+    scores.append(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(
+        data_without_target[test_indices], target[test_indices]))
+
+print("Accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+
+# testing knn
+knn = KNeighborsClassifier()
+
+knn_train_data = np.delete(data_train, 8, 1)
+knn_test_data = np.delete(data_test, 8, 1)
+
+knn.fit(knn_train_data, data_train[:, 8])
+knn_result = knn.predict(knn_test_data)
+
+conf_matrix = confusion_matrix(data_test[:, 8], knn_result)
+
+print("Perpetrator sex confusion matrix:")
+print(conf_matrix)
+
+# cross validation knn
+scores = []
+data_without_target = np.delete(data_matrix, 8, 1)
+target = data_matrix[:, 8]
+k_fold = KFold(n_splits=10)
+for train_indices, test_indices in k_fold.split(target):
+    scores.append(
+        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                 target[test_indices]))
+
+print("knn Perpetrator sex accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+
+for n in range(5, 10, 3):
+    knn = KNeighborsClassifier(n_neighbors=n)
+    scores = []
+    data_without_target = np.delete(data_matrix, 9, 1)
+    target = data_matrix[:, 9]
+    k_fold = KFold(n_splits=10)
+    for train_indices, test_indices in k_fold.split(target):
+        scores.append(
+            knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                     target[test_indices]))
+
+    print("knn, k = " + str(n) + " Perpetrator age accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+
+###Decision trees
+
+
+clf = tree.DecisionTreeClassifier()
+scores = []
+data_without_target = np.c_[
+    agency_type, dataset.Year.values, month, crime_type, victim_Sex, dataset.Victim_Age.values,
+    victim_race, weapon,
+    dataset.Additional_Victims_Count.values]
+target = data_matrix[:, 4]
+k_fold = KFold(n_splits=10)
+for train_indices, test_indices in k_fold.split(target):
+    clf.fit(data_without_target[train_indices], target[train_indices])
+    result = clf.predict(data_without_target[test_indices])
+    conf_matrix = confusion_matrix(target[test_indices], result)
+    print(conf_matrix)
+    scores.append(
+        clf.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
+                                                                                 target[test_indices]))
+
+print("Accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores)))
+
+names = ["Agency_Type", "Year", "Month", "Crime_Type", "Victim_Sex", "Victim_Age", "Victim_Race", "Weapon",
+         "Additional_Victims_Count"]
+classes = ["crime NOT solved", "crime solved"]
+clf.fit(data_without_target, target)
+dot_data = tree.export_graphviz(clf, feature_names=names, class_names=classes, out_file=None, max_depth=3, filled=True,
+                                rounded=True, special_characters=True)
+graph = graphviz.Source(dot_data)
+graph.render("MurderMystery")
 
 interactive_data = np.c_[cities, victim_Sex, dataset.Victim_Age.values, weapon]
 
@@ -85,7 +189,7 @@ for n in range(5, 30, 3):
             knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
                                                                                      target[test_indices]))
 
-    print("knn, k = " + str(n) +" weapon accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
+    print("knn, k = " + str(n) + " weapon accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
 
 root = Tk()
 root.title("Choose the victim data?")
@@ -130,112 +234,10 @@ def ok_pressed():
     to_predict = [
         [city_enc.transform([tkcity.get()])[0], victim_sex_enc.transform([tkgender.get()])[0], int(tkage.get())]]
     res = knn.predict(to_predict)
-    print("The victim will die with a: "+weapon_enc.inverse_transform(res[0]))
+    print("The victim will die with a: " + weapon_enc.inverse_transform(res[0]))
 
 
 okButton = Button(mainframe, text="OK", command=ok_pressed)
 okButton.grid(row=7, column=1)
 
 root.mainloop()
-
-data_matrix = np.c_[
-    agency_type, dataset.Year.values, month, crime_type, crime_solved, victim_Sex, dataset.Victim_Age.values,
-    victim_race, perpetrator_sex, dataset.Perpetrator_Age.values, perpetrator_race, relationship, weapon,
-    dataset.Additional_Victims_Count.values, dataset.Additional_Perpetrators_Count.values]
-
-data_train, data_test, y_train, y_test = train_test_split(data_matrix, data_matrix[:, 3], test_size=0.3)
-
-# testing Naive Bayes
-naive_bayes = GaussianNB()
-
-bayes_train_data = np.delete(data_train, 4, 1)
-bayes_test_data = np.delete(data_test, 4, 1)
-
-naive_bayes.fit(bayes_train_data, data_train[:, 4])
-nb_result = naive_bayes.predict(bayes_test_data)
-
-conf_matrix = confusion_matrix(data_test[:, 4], nb_result)
-print("partitioning bayes crime solved confusion matrix:")
-print(conf_matrix)
-print(naive_bayes.fit(bayes_train_data, data_train[:, 4]).score(bayes_test_data, data_test[:, 4]))
-
-print("cross validation bayes crime solved confusion matrix:")
-#cross validation
-scores = []
-data_without_target = np.delete(data_matrix, 4, 1)
-target = data_matrix[:, 4]
-k_fold = KFold(n_splits=5)
-for train_indices, test_indices in k_fold.split(target):
-	naive_bayes.fit(data_without_target[train_indices], target[train_indices])
-	result = naive_bayes.predict(data_without_target[test_indices])
-	conf_matrix = confusion_matrix(target[test_indices], result)
-	print(conf_matrix)
-	scores.append(naive_bayes.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
-
-print("Accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
-
-# testing knn
-knn = KNeighborsClassifier()
-
-knn_train_data = np.delete(data_train, 8, 1)
-knn_test_data = np.delete(data_test, 8, 1)
-
-knn.fit(knn_train_data, data_train[:, 8])
-knn_result = knn.predict(knn_test_data)
-
-conf_matrix = confusion_matrix(data_test[:, 8], knn_result)
-
-print("Perpetrator sex confusion matrix:")
-print(conf_matrix)
-
-# cross validation knn
-scores = []
-data_without_target = np.delete(data_matrix, 8, 1)
-target = data_matrix[:, 8]
-k_fold = KFold(n_splits=10)
-for train_indices, test_indices in k_fold.split(target):
-    scores.append(
-        knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
-                                                                                 target[test_indices]))
-
-print("knn Perpetrator sex accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
-
-for n in range(5, 30, 3):
-    knn = KNeighborsClassifier(n_neighbors=n)
-    scores = []
-    data_without_target = np.delete(data_matrix, 9, 1)
-    target = data_matrix[:, 9]
-    k_fold = KFold(n_splits=10)
-    for train_indices, test_indices in k_fold.split(target):
-        scores.append(
-            knn.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices],
-                                                                                     target[test_indices]))
-
-    print("knn, k = " + str(n) +" Perpetrator age accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores) * 2))
-
-###Decision trees
-
-
-clf = tree.DecisionTreeClassifier()
-scores = []
-data_without_target = np.c_[
-    agency_type, dataset.Year.values, month, crime_type, victim_Sex, dataset.Victim_Age.values,
-    victim_race, weapon,
-    dataset.Additional_Victims_Count.values]
-target = data_matrix[:,4]
-k_fold = KFold(n_splits=10)
-for train_indices, test_indices in k_fold.split(target):
-	clf.fit(data_without_target[train_indices], target[train_indices])
-	result = clf.predict(data_without_target[test_indices])
-	conf_matrix = confusion_matrix(target[test_indices], result)
-	print(conf_matrix)
-	scores.append(clf.fit(data_without_target[train_indices], target[train_indices]).score(data_without_target[test_indices], target[test_indices]))
-
-print("Accuracy: %0.4f (+/- %0.4f)" % (np.mean(scores), np.std(scores)))
-
-names = ["Agency_Type","Year","Month","Crime_Type","Victim_Sex","Victim_Age","Victim_Race","Weapon","Additional_Victims_Count"]
-classes = ["crime NOT solved", "crime solved"]
-clf.fit(data_without_target, target)
-dot_data = tree.export_graphviz(clf, feature_names=names, class_names=classes, out_file=None, max_depth=3, filled=True, rounded=True, special_characters=True)
-graph = graphviz.Source(dot_data)
-graph.render("MurderMystery")
