@@ -74,7 +74,7 @@
 
 \section{Introduction}
 
-We are big python fans so we decided to try one of the libraries for machine learning that are available, \textit{sklearn}. To do so we chose a dataset that looked interesting, it's about homicide reports on the United States between 1980 and 2014. The main variables are as follows:
+We are big python fans so we decided to try one of the libraries for machine learning that are available, \textit{sklearn}. To do so we chose a dataset that looked interesting, it's about homicide reports on the United States between 1980 and 2014 (the link to the database is https://www.kaggle.com/murderaccountability/homicide-reports/data). The main variables are as follows:
 \\\\
 \emph{City/State/Year/Month:} Time and place of the incident.\\
 \emph{CrimeType:} The type of crime commited, in this database it can be either a murder, or a manslaughter by negligence.\\
@@ -164,17 +164,70 @@ As we can see, the classification is much worse, but seems like a legit one. We 
 \item The year of the crime is older or equal to 1995. This is also logical, as technology evolves very rapidly nowadays, and new crucial techniques for investigation become available in a matter of years.
 \end{enumerate}
 
-So, even if the classification has only an accuracy of approximately 60 percent, we managed to understand the key characteristics of tackling the problem of solving a crime which is what we were looking for.
+So, even if the classification has only an accuracy of approximately 60 percent, we managed to understand the key characteristics of tackling the problem of solving a crime which is what we were looking for. Even then, we wanted to try to implement a roc curve visualization of the classifier. The results can be seen in figure \ref{fig:ROCDT}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{../Images/RocCurveDecisionTree}
+  \caption{5-CV ROC curve using decision tree}
+  \label{fig:ROCDT}
+\end{figure}
+
+We can see that the area of the rock curves is pretty low, meaning that this is not a great classifier. Still, at least it seems to provide consistent results across all the folds of cross validation.
 
 \subsection{K-Nearest Neighbours (KNN)}
-
+Another algorithm that we wanted to test because is very common and easy to use was k Nearest Neighbour. As the other algorithm, the usage is very simple as it mainly requires the number of neighbours and the train and test dataset to work.
 \subsection{Predictor Application}
+As a first test, to makes things funny, we designed a simple input window where to put the city, the gender and the age. The algorithm predicts what type of weapon a person with these inputs can die from.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.5\linewidth]{../Images/InteractiveApp.png}
+  \caption{The input window}
+  \label{fig:knnApp}
+\end{figure}
+
+To do this, the algorithm was trained with the data from the city, the gender     and age of the victim and the weapon used. However, testing the accuracy with a 10 cross validation shows that the algorithms is not very precise, even changing the number of neighbours from 5 to 30, it reaches a maximum of 0.5\%, of course with higher numbers of k. To run this test we had to limit the number of cities to be chosen as they could not be displayed in the UI.
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.5\linewidth]{../Images/Weapon1.png}
+\end{figure}
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.5\linewidth]{../Images/Weapon2.png}
+\end{figure}
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.5\linewidth]{../Images/Weapon3.png}
+  \caption{Test results}
+\end{figure}
+The result that we have from this test is that the handgun is the most common weapon used (predictably in the US there are many handguns owners), but also that some other city have crimes committed with white weapon, like in the example showed in figure \ref{fig:knnApp}. Furthermore choosing a very young age, returns a blunt objects as weapon, as rarely young children are shot, except for accidents.
+\newline
+Then we also test the algorithm to predict the age and gender of the perpetrator of the crime to know in advance who is the killer.
+This time we can observe that the accuracy of the algorithm to predict the gender is much higher than the previous case, even leaving the default value of k equals to 5, and also better than the prediction of the age.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.5\linewidth]{../Images/knnSexConf.png}
+  \caption{Confusion Matrix for the gender of the perpetrator}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.7\linewidth]{../Images/knnAccuracy.png}
+  \caption{Accuracy of knn test}
+\end{figure}
+
+This results were expected, as the algorithm can classify easily an element when the classes are few, like the gender, but struggles with more classes, like the weapon and the age.
+\newline
+The performances of the algorithm were quite good. Of course testing the algorithm with different number of neighbours took a lot of time, but on average the time necessary was coherent with the dimension of the database.
 
 \section{Final Thoughts} 
 After trying out this library we have reached some mixed feelings about it:
 \begin{itemize}
 \item[+] It provides a very deep way of implementing machine learning, that is to say that the functions included on this library are very specific in their function, and you are free to implement your own way of doing stuff.
 \item[+] Being in python mean that it may be one of the best ways to intertwine both algorithm programming and machine learning easily.
+\item[+] The number of available algorithms for this library is really extensive.
 \item[-] It's not that clear what is happening on each step, even when using python IDEs or printing outputs, you hardly get a clear idea of the process that your data goes through, or what's the state of it at each step.
 \item[-] The documentation is confusing at times, and relatively not that many people uses this library.
 \item[-] The classes included could use more functions at times, and this functions would also improve if they could adapt to different inputs and outputs (for example, needing that all variables to be numerical, and not doing the conversion internally).

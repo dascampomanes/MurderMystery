@@ -4,6 +4,6 @@
 \contentsline {section}{\numberline {3}Data Mining Algorithms}{3}
 \contentsline {subsection}{\numberline {3.1}Naive Bayes}{3}
 \contentsline {subsection}{\numberline {3.2}Decision Tree}{3}
-\contentsline {subsection}{\numberline {3.3}K-Nearest Neighbours (KNN)}{6}
-\contentsline {subsection}{\numberline {3.4}Predictor Application}{6}
-\contentsline {section}{\numberline {4}Final Thoughts}{6}
+\contentsline {subsection}{\numberline {3.3}K-Nearest Neighbours (KNN)}{7}
+\contentsline {subsection}{\numberline {3.4}Predictor Application}{7}
+\contentsline {section}{\numberline {4}Final Thoughts}{9}
